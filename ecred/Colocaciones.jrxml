@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Colocaciones" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="772" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" uuid="ea336f77-abc2-4ed9-9d6c-7fb39f8ef316">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ecred"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="p_year" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Año]]></parameterDescription>
+		<defaultValueExpression><![CDATA[2024]]></defaultValueExpression>
+	</parameter>
+	<parameter name="p_month" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Número de recibo (documento)]]></parameterDescription>
+		<defaultValueExpression><![CDATA[6]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT 
+	credito.operacion,
+	CONCAT(cliente.nombre, ' ', cliente.apellido1, ' ', cliente.apellido2) AS cliente,
+	linea.descrip AS línea,
+	credito.monto_solicitado,
+	credito.monto_ajuste_dias,
+	credito.monto_solicitado * (credito.aporte_solidario / 100) AS poliza,
+	credito.tramite_administrativo,
+	credito.monto_aprobado,
+	(SELECT SUM(monto) FROM desembolso WHERE desembolso.operacion = credito.operacion) AS monto_desembolsado,
+	(SELECT MIN(fecha) FROM desembolso WHERE desembolso.operacion = credito.operacion) AS fecha,
+	(SELECT company_name FROM config LIMIT 1) AS company
+FROM credito
+INNER JOIN cliente ON credito.cliente_id = cliente.id
+INNER JOIN linea ON credito.linea_id = linea.id
+WHERE EXISTS(	SELECT operacion FROM desembolso 
+			WHERE operacion = credito.operacion
+			AND YEAR(fecha) =  $P{p_year}
+			AND MONTH(fecha) = $P{p_month}
+			)]]>
+	</queryString>
+	<field name="operacion" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="operacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="operacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="credito"/>
+	</field>
+	<field name="cliente" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cliente"/>
+		<property name="com.jaspersoft.studio.field.label" value="cliente"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tmp_movimientos"/>
+	</field>
+	<field name="línea" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descrip"/>
+		<property name="com.jaspersoft.studio.field.label" value="línea"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="linea"/>
+	</field>
+	<field name="monto_solicitado" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="monto_solicitado"/>
+		<property name="com.jaspersoft.studio.field.label" value="monto_solicitado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="credito"/>
+	</field>
+	<field name="monto_ajuste_dias" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="monto_ajuste_dias"/>
+		<property name="com.jaspersoft.studio.field.label" value="monto_ajuste_dias"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="credito"/>
+		<fieldDescription><![CDATA[Interes diario multiplicado por la cantidad de días a ajustar]]></fieldDescription>
+	</field>
+	<field name="poliza" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="poliza"/>
+		<property name="com.jaspersoft.studio.field.label" value="poliza"/>
+	</field>
+	<field name="tramite_administrativo" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="tramite_administrativo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tramite_administrativo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="credito"/>
+		<fieldDescription><![CDATA[Monto que se cobra por la gestión (se incluye en el monto desembolsado)]]></fieldDescription>
+	</field>
+	<field name="monto_aprobado" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="monto_aprobado"/>
+		<property name="com.jaspersoft.studio.field.label" value="monto_aprobado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="credito"/>
+		<fieldDescription><![CDATA[Monto bruto del crédito]]></fieldDescription>
+	</field>
+	<field name="monto_desembolsado" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="monto_desembolsado"/>
+		<property name="com.jaspersoft.studio.field.label" value="monto_desembolsado"/>
+	</field>
+	<field name="fecha" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="fecha"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha"/>
+	</field>
+	<field name="company" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="company"/>
+		<property name="com.jaspersoft.studio.field.label" value="company"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="vestado_cuenta"/>
+	</field>
+	<variable name="vTotalDesembolsado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{monto_desembolsado}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="vTotalAprobado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{monto_aprobado}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="vTotalSolicitado" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{monto_solicitado}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="10" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="71" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="2" width="772" height="30" forecolor="#3300FF" uuid="856ca83b-5ecf-4fd0-bf14-53a14f5be909">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="24" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{company}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="41" width="772" height="20" uuid="1517f3b4-99fc-4d3a-8a10-71ca9d884253">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Colocaciones periodo " + $P{p_month} + " , " + $P{p_year}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="40" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="24" width="64" height="16" forecolor="#009900" uuid="a2e40b07-23ae-4302-8005-ee11b1476570">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Op#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="709" y="24" width="62" height="16" forecolor="#009900" uuid="49eefe35-3605-4bda-ae15-a56d0469ddb2">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="633" y="24" width="70" height="16" forecolor="#009900" uuid="aad8db53-b68a-414c-a168-8acfbe8e32f0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desemb]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="314" y="24" width="70" height="16" forecolor="#009900" uuid="e819128e-fcc8-4066-b638-4a704034cd1e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Solicitado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="562" y="24" width="70" height="16" forecolor="#009900" uuid="3a87eec0-1083-4e67-9ccb-1c790b747982"/>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aprobado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="53" y="24" width="130" height="16" forecolor="#009900" uuid="ebfdf041-f86f-4878-a42a-c37ff496df60"/>
+				<textElement>
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="184" y="24" width="130" height="16" forecolor="#009900" uuid="f1d6f625-e114-429a-8e2a-2735e853f36c"/>
+				<textElement>
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Línea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="384" y="24" width="55" height="16" forecolor="#009900" uuid="51c80fe8-ef06-4b7b-9226-65ff2760f9f4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ajte]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="442" y="24" width="55" height="16" forecolor="#009900" uuid="f16df9a9-31e9-4f6c-ba4f-806321640f6d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pól]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="24" width="55" height="16" forecolor="#009900" uuid="76d7190d-18da-46c4-b751-b2559225966d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Com]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="0" width="50" height="14" uuid="e3aa5b1a-b6e6-400d-a230-8fdd0a600234">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{operacion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="706" y="0" width="65" height="14" uuid="569e64f8-a59b-4a61-b427-5c680cac33f0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="633" y="0" width="70" height="14" uuid="fc5e932f-4ab1-4339-a8db-1d9fcaaaa466"/>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_desembolsado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="314" y="0" width="70" height="14" uuid="c9beb2b1-0b60-4bf6-8e81-b6e7956da991">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_solicitado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="562" y="0" width="70" height="14" uuid="0566cd5f-dc6c-4280-b265-5990144c31e1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_aprobado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="ElementGroupBottom" x="53" y="0" width="130" height="14" uuid="c6a56b6b-1597-4631-a791-eb8d7ea50a96">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement stretchType="ElementGroupBottom" x="184" y="0" width="130" height="14" uuid="6f369e41-b7f1-45db-953d-74eaef07070b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{línea}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="384" y="0" width="55" height="14" uuid="b67d7f0a-8163-4b59-9c40-ab72bc4612ba">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto_ajuste_dias}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="442" y="0" width="55" height="14" uuid="c2cae096-caec-495d-ac45-8b15024783a8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{poliza}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="502" y="0" width="55" height="14" uuid="cd9c8748-044b-499c-a3ed-439c1964037f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tramite_administrativo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="18" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="671" y="0" width="100" height="20" uuid="fd46045e-68fc-4759-8d89-2339383655ff"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="39" splitType="Stretch">
+			<textField pattern="#,##0.00#">
+				<reportElement x="314" y="10" width="70" height="17" forecolor="#009900" uuid="5fc3466a-adbf-4d67-9385-dac1b43f2051">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{vTotalSolicitado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="633" y="10" width="70" height="17" forecolor="#009900" uuid="de0fc200-1af6-412e-aeab-080e5f889036">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{vTotalDesembolsado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="562" y="10" width="70" height="17" forecolor="#009900" uuid="44b65e1e-6847-4caa-97ca-1492dcbf4536">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Tahoma" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{vTotalAprobado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
