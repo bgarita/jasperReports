@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.1.final using JasperReports Library version 6.20.1-7584acb244139816654f64e2fd57a00d3e31921e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Xmls" pageWidth="1008" pageHeight="612" orientation="Landscape" columnWidth="988" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" uuid="ea336f77-abc2-4ed9-9d6c-7fb39f8ef316">
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="Xmls" language="java" pageWidth="1008" pageHeight="612" orientation="Landscape" columnWidth="988" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" uuid="ea336f77-abc2-4ed9-9d6c-7fb39f8ef316">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Convertidor de Factura Electrónica"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FE"/>
 	<property name="com.jaspersoft.studio.report.description" value="Reporte de xmls cargados"/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="225"/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="767"/>
 	<parameter name="p_year" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Año]]></parameterDescription>
+		<description><![CDATA[Año]]></description>
 		<defaultValueExpression><![CDATA[2022]]></defaultValueExpression>
 	</parameter>
 	<parameter name="p_month" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Mes]]></parameterDescription>
+		<description><![CDATA[Mes]]></description>
 		<defaultValueExpression><![CDATA[11]]></defaultValueExpression>
 	</parameter>
 	<parameter name="p_receptor" class="java.lang.String">
@@ -26,13 +25,12 @@
 	<parameter name="p_nombreCom" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Todos"]]></defaultValueExpression>
 	</parameter>
-	<queryString language="SQL">
-		<![CDATA[SELECT
+	<query language="SQL"><![CDATA[SELECT
 	encabezado.numero_receptor,
 	company.nombre_receptor,
 	tipo_documento,
 	fecha_emision,
-	comprobante,
+	encabezado.numero_consecutivo AS comprobante,
 	total_exento * tipo_cambio AS exento,
 	total_gravado * tipo_cambio AS gravado,
 	total_venta * tipo_cambio AS subtotal,
@@ -40,16 +38,16 @@
 	total_venta_neta * tipo_cambio AS venta_neta,
 	total_impuesto * tipo_cambio AS impuesto,
 	total_comprobante * tipo_cambio AS total_comprobante,
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '01' AND tarifa = 1),0)) * tipo_cambio AS 'IVA1',
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '01' AND tarifa = 13),0)) * tipo_cambio AS 'IVA13',
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '01' AND tarifa NOT IN(1,13)),0)) * tipo_cambio AS 'IVA_',
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '02'),0)) * tipo_cambio AS ISC,
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '03'),0)) * tipo_cambio AS IUC,
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '99'),0)) * tipo_cambio AS Otros,
-	sum(IFNULL((SELECT SUM(monto) from impuesto WHERE detalle_id = detalle.id AND codigo_impuesto NOT IN('01', '02', '03', '99')),0)) * tipo_cambio AS Otros2	
-FROM detalle 
-INNER JOIN encabezado ON detalle.clave = encabezado.clave
-INNER JOIN company ON encabezado.numero_receptor = company.numero_receptor
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '01' AND tarifa = 1),0)) * tipo_cambio AS 'IVA1',
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto IN( '01', '07') AND tarifa = 13),0)) * tipo_cambio AS 'IVA13',
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '01' AND tarifa NOT IN(1,13)),0)) * tipo_cambio AS 'IVA_',
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '02'),0)) * tipo_cambio AS ISC,
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '03'),0)) * tipo_cambio AS IUC,
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto = '99'),0)) * tipo_cambio AS Otros,
+	sum(IFNULL((SELECT SUM(monto) from fe.impuesto WHERE detalle_id = detalle.id AND codigo_impuesto NOT IN('01', '02', '03', '07', '99')),0)) * tipo_cambio AS Otros2	
+FROM fe.detalle 
+INNER JOIN fe.encabezado ON detalle.clave = encabezado.clave
+INNER JOIN fe.company ON encabezado.numero_receptor = company.numero_receptor
 WHERE year(encabezado.fecha_emision) =  $P{p_year} 
 AND month(encabezado.fecha_emision) =  $P{p_month} 
 AND If($P{p_receptor} = 'todos', encabezado.numero_receptor = encabezado.numero_receptor, encabezado.numero_receptor = $P{p_receptor})
@@ -57,24 +55,23 @@ AND If($P{p_emisor} = 'todos', encabezado.numero_emisor = encabezado.numero_emis
 AND If($P{p_tipoDoc} = 'todos', encabezado.tipo_documento = encabezado.tipo_documento, encabezado.tipo_documento = $P{p_tipoDoc})
 AND If($P{p_nombreCom} = 'Todos', encabezado.nombre_comercial_receptor = encabezado.nombre_comercial_receptor, encabezado.nombre_comercial_receptor = $P{p_nombreCom})
 GROUP BY detalle.clave
-ORDER BY nombre_receptor, fecha_emision;]]>
-	</queryString>
+ORDER BY nombre_receptor, fecha_emision;]]></query>
 	<field name="numero_receptor" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="numero_receptor"/>
 		<property name="com.jaspersoft.studio.field.label" value="numero_receptor"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="encabezado"/>
 	</field>
 	<field name="nombre_receptor" class="java.lang.String">
+		<description><![CDATA[Nombre del receptor]]></description>
 		<property name="com.jaspersoft.studio.field.name" value="nombre_receptor"/>
 		<property name="com.jaspersoft.studio.field.label" value="nombre_receptor"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="company"/>
-		<fieldDescription><![CDATA[Nombre del receptor]]></fieldDescription>
 	</field>
 	<field name="tipo_documento" class="java.lang.String">
+		<description><![CDATA[FAC, NCR, NDB]]></description>
 		<property name="com.jaspersoft.studio.field.name" value="tipo_documento"/>
 		<property name="com.jaspersoft.studio.field.label" value="tipo_documento"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="encabezado"/>
-		<fieldDescription><![CDATA[FAC, NCR, NDB]]></fieldDescription>
 	</field>
 	<field name="fecha_emision" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="fecha_emision"/>
@@ -82,7 +79,7 @@ ORDER BY nombre_receptor, fecha_emision;]]>
 		<property name="com.jaspersoft.studio.field.tree.path" value="encabezado"/>
 	</field>
 	<field name="comprobante" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="comprobante"/>
+		<property name="com.jaspersoft.studio.field.name" value="numero_consecutivo"/>
 		<property name="com.jaspersoft.studio.field.label" value="comprobante"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="encabezado"/>
 	</field>
@@ -142,797 +139,449 @@ ORDER BY nombre_receptor, fecha_emision;]]>
 		<property name="com.jaspersoft.studio.field.name" value="Otros2"/>
 		<property name="com.jaspersoft.studio.field.label" value="Otros2"/>
 	</field>
-	<variable name="SubtotalExento" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{exento}]]></variableExpression>
+	<variable name="SubtotalExento" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{exento}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalExento" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{exento}]]></variableExpression>
+	<variable name="TotalExento" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{exento}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalGravado" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{gravado}]]></variableExpression>
+	<variable name="SubtotalGravado" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{gravado}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalGravado" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{gravado}]]></variableExpression>
+	<variable name="TotalGravado" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{gravado}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalSubtotal" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{subtotal}]]></variableExpression>
+	<variable name="SubtotalSubtotal" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{subtotal}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalSubtotal" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{subtotal}]]></variableExpression>
+	<variable name="TotalSubtotal" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{subtotal}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalDescuento" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{descuento}]]></variableExpression>
+	<variable name="SubtotalDescuento" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{descuento}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalDescuento" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{descuento}]]></variableExpression>
+	<variable name="TotalDescuento" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{descuento}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalVentaneta" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{venta_neta}]]></variableExpression>
+	<variable name="SubtotalVentaneta" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{venta_neta}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalVentaneta" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{venta_neta}]]></variableExpression>
+	<variable name="TotalVentaneta" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{venta_neta}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalImpuesto" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{impuesto}]]></variableExpression>
+	<variable name="SubtotalImpuesto" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{impuesto}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalImpuesto" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{impuesto}]]></variableExpression>
+	<variable name="TotalImpuesto" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{impuesto}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalComprobante" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{total_comprobante}]]></variableExpression>
+	<variable name="SubtotalComprobante" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{total_comprobante}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalComprobante" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{total_comprobante}]]></variableExpression>
+	<variable name="TotalComprobante" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{total_comprobante}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalIVA1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{IVA1}]]></variableExpression>
+	<variable name="SubtotalIVA1" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IVA1}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalIVA1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{IVA1}]]></variableExpression>
+	<variable name="TotalIVA1" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IVA1}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalIVA_" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{IVA_}]]></variableExpression>
+	<variable name="SubtotalIVA_" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IVA_}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalIVA_" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{Otros}]]></variableExpression>
+	<variable name="TotalIVA_" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{Otros}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalIUC" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{IUC}]]></variableExpression>
+	<variable name="SubtotalIUC" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IUC}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalIUC" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{IUC}]]></variableExpression>
+	<variable name="TotalIUC" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IUC}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalISC" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{ISC}]]></variableExpression>
+	<variable name="SubtotalISC" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{ISC}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalISC" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{ISC}]]></variableExpression>
+	<variable name="TotalISC" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{ISC}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalIVA13" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{IVA13}]]></variableExpression>
+	<variable name="SubtotalIVA13" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IVA13}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalIVA13" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{IVA13}]]></variableExpression>
+	<variable name="TotalIVA13" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{IVA13}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SutotalOtros1" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{Otros}]]></variableExpression>
+	<variable name="SutotalOtros1" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{Otros}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalOtros1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{Otros}]]></variableExpression>
+	<variable name="TotalOtros1" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{Otros}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SubtotalOtros2" class="java.math.BigDecimal" resetType="Group" resetGroup="Receptor" calculation="Sum">
-		<variableExpression><![CDATA[$F{Otros2}]]></variableExpression>
+	<variable name="SubtotalOtros2" resetType="Group" calculation="Sum" resetGroup="Receptor" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{Otros2}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="TotalOtros2" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{Otros2}]]></variableExpression>
+	<variable name="TotalOtros2" calculation="Sum" class="java.math.BigDecimal">
+		<expression><![CDATA[$F{Otros2}]]></expression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<group name="Receptor">
-		<groupExpression><![CDATA[$F{nombre_receptor}]]></groupExpression>
+		<expression><![CDATA[$F{nombre_receptor}]]></expression>
 		<groupHeader>
 			<band height="26">
-				<staticText>
-					<reportElement x="3" y="6" width="60" height="16" forecolor="#F757C7" uuid="a2e40b07-23ae-4302-8005-ee11b1476570">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="Tahoma" size="12" isBold="true"/>
-					</textElement>
+				<element kind="staticText" uuid="a2e40b07-23ae-4302-8005-ee11b1476570" x="3" y="6" width="60" height="16" forecolor="#F757C7" fontName="Tahoma" fontSize="12.0" bold="true">
 					<text><![CDATA[Receptor]]></text>
-				</staticText>
-				<textField>
-					<reportElement x="66" y="7" width="62" height="14" forecolor="#F757C7" uuid="e3aa5b1a-b6e6-400d-a230-8fdd0a600234">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="Tahoma" size="10" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{numero_receptor}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="131" y="7" width="227" height="14" forecolor="#F757C7" uuid="c9f57fb9-df03-4c54-86c6-ba51cb9172ce">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="Tahoma" size="10" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{nombre_receptor}]]></textFieldExpression>
-				</textField>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</element>
+				<element kind="textField" uuid="e3aa5b1a-b6e6-400d-a230-8fdd0a600234" x="66" y="7" width="62" height="14" forecolor="#F757C7" fontName="Tahoma" fontSize="10.0" bold="true">
+					<expression><![CDATA[$F{numero_receptor}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="c9f57fb9-df03-4c54-86c6-ba51cb9172ce" x="131" y="7" width="227" height="14" forecolor="#F757C7" fontName="Tahoma" fontSize="10.0" bold="true">
+					<expression><![CDATA[$F{nombre_receptor}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
 			</band>
 		</groupHeader>
 		<groupFooter>
 			<band height="62">
-				<textField pattern="#,##0.00#">
-					<reportElement x="167" y="3" width="59" height="17" forecolor="#1121F7" uuid="37083b00-808b-47d6-b5ff-47950ce66656">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalExento}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="228" y="3" width="73" height="17" forecolor="#1121F7" uuid="75ba1e50-6d01-4d1d-bc36-62ce8aa2539c">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalGravado}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="302" y="3" width="73" height="17" forecolor="#1121F7" uuid="01e01830-b4e6-4268-b7fe-302d062bb7e9">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalSubtotal}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="377" y="3" width="48" height="17" forecolor="#1121F7" uuid="4d5b3e6d-a203-46cb-84f1-78c58f21110d">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalDescuento}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="429" y="3" width="70" height="17" forecolor="#1121F7" uuid="75b5dff4-ef7f-4bb9-a348-d3c767f8e957">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalImpuesto}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="501" y="3" width="62" height="17" forecolor="#1121F7" uuid="415d01ff-75b0-474a-98c0-ff865986bff7">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalIVA1}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="640" y="3" width="48" height="17" forecolor="#1121F7" uuid="06ebcfd5-fe9b-478a-a5ab-4631113eae6f">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalIVA_}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="692" y="3" width="48" height="17" forecolor="#1121F7" uuid="63d373df-ff0b-4182-b1d4-42ecb9c0a28d">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalISC}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="796" y="3" width="50" height="17" forecolor="#1121F7" uuid="7f437674-4990-43d2-b08b-2be3f071f236">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SutotalOtros1}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="566" y="3" width="70" height="17" forecolor="#1121F7" uuid="8c2c178f-3641-43ea-b781-fd5d752cd32c">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalIVA13}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="902" y="3" width="78" height="17" forecolor="#1121F7" uuid="1348e582-af6b-4527-86f4-211a6a21b329">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalComprobante}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="743" y="3" width="48" height="17" forecolor="#1121F7" uuid="f73d4c7d-6f0f-4bec-be58-28832473e2ae">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalIUC}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="850" y="3" width="47" height="17" forecolor="#1121F7" uuid="3ffd932b-af45-4074-adbc-84871153707d">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="9" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalOtros2}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="0" y="24" width="80" height="16" forecolor="#009900" uuid="2788dcc1-da01-48f5-b415-ca31014d2bf9">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Left">
-						<font fontName="Tahoma" size="12" isBold="true"/>
-					</textElement>
+				<element kind="textField" uuid="37083b00-808b-47d6-b5ff-47950ce66656" x="167" y="3" width="59" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00#" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalExento}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="75ba1e50-6d01-4d1d-bc36-62ce8aa2539c" x="228" y="3" width="73" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalGravado}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="textField" uuid="01e01830-b4e6-4268-b7fe-302d062bb7e9" x="302" y="3" width="73" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalSubtotal}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="4d5b3e6d-a203-46cb-84f1-78c58f21110d" x="377" y="3" width="48" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalDescuento}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="75b5dff4-ef7f-4bb9-a348-d3c767f8e957" x="429" y="3" width="70" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalImpuesto}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</element>
+				<element kind="textField" uuid="415d01ff-75b0-474a-98c0-ff865986bff7" x="501" y="3" width="62" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalIVA1}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="06ebcfd5-fe9b-478a-a5ab-4631113eae6f" x="640" y="3" width="48" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalIVA_}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="63d373df-ff0b-4182-b1d4-42ecb9c0a28d" x="692" y="3" width="48" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalISC}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="textField" uuid="7f437674-4990-43d2-b08b-2be3f071f236" x="796" y="3" width="50" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SutotalOtros1}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="8c2c178f-3641-43ea-b781-fd5d752cd32c" x="566" y="3" width="70" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalIVA13}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="1348e582-af6b-4527-86f4-211a6a21b329" x="902" y="3" width="78" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalComprobante}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="f73d4c7d-6f0f-4bec-be58-28832473e2ae" x="743" y="3" width="48" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalIUC}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="textField" uuid="3ffd932b-af45-4074-adbc-84871153707d" x="850" y="3" width="47" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalOtros2}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="staticText" uuid="2788dcc1-da01-48f5-b415-ca31014d2bf9" x="0" y="24" width="80" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Left">
 					<text><![CDATA[Gravado 1%]]></text>
-				</staticText>
-				<textField pattern="#,##0.00">
-					<reportElement x="90" y="24" width="100" height="17" forecolor="#1121F7" uuid="8593b059-6eaf-4bb1-a3eb-8cd37762d070">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="10" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalIVA1}.doubleValue()/0.01]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="0" y="42" width="90" height="16" forecolor="#009900" uuid="334d632d-e086-4651-8b50-948556df4da6">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Left">
-						<font fontName="Tahoma" size="12" isBold="true"/>
-					</textElement>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</element>
+				<element kind="textField" uuid="8593b059-6eaf-4bb1-a3eb-8cd37762d070" x="90" y="24" width="100" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="10.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalIVA1}.doubleValue()/0.01]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="staticText" uuid="334d632d-e086-4651-8b50-948556df4da6" x="0" y="42" width="90" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Left">
 					<text><![CDATA[Gravado 13%]]></text>
-				</staticText>
-				<textField pattern="#,##0.00">
-					<reportElement x="90" y="42" width="100" height="17" forecolor="#1121F7" uuid="d76bf1ce-4fd6-4e46-aa32-29e55ab830b8">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Tahoma" size="10" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{SubtotalIVA13}.doubleValue()/0.13]]></textFieldExpression>
-				</textField>
-				<rectangle>
-					<reportElement mode="Transparent" x="0" y="24" width="191" height="35" uuid="09e70b94-92fa-4d78-b847-45a63721693c"/>
-					<graphicElement>
-						<pen lineColor="#D9100D"/>
-					</graphicElement>
-				</rectangle>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</element>
+				<element kind="textField" uuid="d76bf1ce-4fd6-4e46-aa32-29e55ab830b8" x="90" y="42" width="100" height="17" forecolor="#1121F7" fontName="Tahoma" fontSize="10.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$V{SubtotalIVA13}.doubleValue()/0.13]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="rectangle" uuid="09e70b94-92fa-4d78-b847-45a63721693c" mode="Transparent" x="0" y="24" width="191" height="35">
+					<pen lineColor="#D9100D"/>
+				</element>
 			</band>
 		</groupFooter>
 	</group>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<pageHeader>
-		<band height="14" splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="78" splitType="Stretch">
-			<staticText>
-				<reportElement x="109" y="61" width="56" height="16" forecolor="#009900" uuid="49eefe35-3605-4bda-ae15-a56d0469ddb2"/>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Fecha]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="167" y="61" width="59" height="16" forecolor="#009900" uuid="77bd6ccf-bc97-492d-a76c-2c817d3163a8">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Exento]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="228" y="61" width="73" height="16" forecolor="#009900" uuid="b22c83b9-b2f2-4921-b31f-ab27ce1bed69">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Gravado]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="429" y="61" width="70" height="16" forecolor="#009900" uuid="986ee8f1-4874-4754-b0a7-33dd357211ca">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Impuesto]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="302" y="61" width="73" height="16" forecolor="#009900" uuid="e819128e-fcc8-4066-b638-4a704034cd1e">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Sub total]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="377" y="61" width="48" height="16" forecolor="#009900" uuid="3a87eec0-1083-4e67-9ccb-1c790b747982">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Desc]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="902" y="61" width="78" height="16" forecolor="#009900" uuid="bb0c19eb-74a4-4844-84bb-608417cf539a">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Total]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="1" y="2" width="978" height="30" forecolor="#3300FF" uuid="63dc1809-94db-4bdd-b424-a7c21e380f22">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="24" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Documentos Electrónicos]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="501" y="61" width="62" height="16" forecolor="#009900" uuid="86678dd1-2d5c-4f8f-9ff2-430149f940e5">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[IVA 1%]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="640" y="61" width="48" height="16" forecolor="#009900" uuid="03845379-b723-4f2d-b110-5c29631f540f">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[IVA ?%]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="692" y="61" width="48" height="16" forecolor="#009900" uuid="baa56f1a-5f69-421b-a668-7db8ab74e65c"/>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[ISC]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="796" y="61" width="50" height="16" forecolor="#009900" uuid="8995ca97-17cd-4e8d-879d-10746429f3d4">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Otros1]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="566" y="61" width="70" height="16" forecolor="#009900" uuid="08cabeff-2665-4bd9-91ce-e6d18944b202"/>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[IVA 13%]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="3" y="31" width="976" height="18" forecolor="#6600FF" uuid="101fb52f-805f-42c4-a0da-938bbf8ce56d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Mes=" + $P{p_month} + ", año=" + $P{p_year} + ", receptor=" + $P{p_receptor} + ", emisor=" + $P{p_emisor}+ ", tipo documento=" + $P{p_tipoDoc}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="850" y="61" width="47" height="16" forecolor="#009900" uuid="0b66cbda-e303-46c1-8b02-64b65de0de0a">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Otros2]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="743" y="61" width="48" height="16" forecolor="#009900" uuid="575a19cb-69d7-4bcd-9053-673f700fdd5a"/>
-				<textElement textAlignment="Right">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[IUC]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="3" y="61" width="101" height="16" forecolor="#009900" uuid="1b4abb3f-4e6b-4264-88fb-171b3d6720b7">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Left">
-					<font fontName="Tahoma" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Consecutivo]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<pageHeader height="14" splitType="Stretch"/>
+	<columnHeader height="78" splitType="Stretch">
+		<element kind="staticText" uuid="49eefe35-3605-4bda-ae15-a56d0469ddb2" x="109" y="61" width="56" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Fecha]]></text>
+		</element>
+		<element kind="staticText" uuid="77bd6ccf-bc97-492d-a76c-2c817d3163a8" x="167" y="61" width="59" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Exento]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="b22c83b9-b2f2-4921-b31f-ab27ce1bed69" x="228" y="61" width="73" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Gravado]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="986ee8f1-4874-4754-b0a7-33dd357211ca" x="429" y="61" width="70" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Impuesto]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+		</element>
+		<element kind="staticText" uuid="e819128e-fcc8-4066-b638-4a704034cd1e" x="302" y="61" width="73" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Sub total]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="3a87eec0-1083-4e67-9ccb-1c790b747982" x="377" y="61" width="48" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Desc]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="bb0c19eb-74a4-4844-84bb-608417cf539a" x="902" y="61" width="78" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Total]]></text>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="63dc1809-94db-4bdd-b424-a7c21e380f22" x="1" y="2" width="978" height="30" forecolor="#3300FF" fontName="Tahoma" fontSize="24.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Documentos Electrónicos]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="86678dd1-2d5c-4f8f-9ff2-430149f940e5" x="501" y="61" width="62" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[IVA 1%]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="03845379-b723-4f2d-b110-5c29631f540f" x="640" y="61" width="48" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[IVA ?%]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="baa56f1a-5f69-421b-a668-7db8ab74e65c" x="692" y="61" width="48" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[ISC]]></text>
+		</element>
+		<element kind="staticText" uuid="8995ca97-17cd-4e8d-879d-10746429f3d4" x="796" y="61" width="50" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Otros1]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="08cabeff-2665-4bd9-91ce-e6d18944b202" x="566" y="61" width="70" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[IVA 13%]]></text>
+		</element>
+		<element kind="textField" uuid="101fb52f-805f-42c4-a0da-938bbf8ce56d" x="3" y="31" width="976" height="18" forecolor="#6600FF" fontName="Tahoma" fontSize="14.0" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Mes=" + $P{p_month} + ", año=" + $P{p_year} + ", receptor=" + $P{p_receptor} + ", emisor=" + $P{p_emisor}+ ", tipo documento=" + $P{p_tipoDoc}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="0b66cbda-e303-46c1-8b02-64b65de0de0a" x="850" y="61" width="47" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[Otros2]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="575a19cb-69d7-4bcd-9053-673f700fdd5a" x="743" y="61" width="48" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<text><![CDATA[IUC]]></text>
+		</element>
+		<element kind="staticText" uuid="1b4abb3f-4e6b-4264-88fb-171b3d6720b7" x="3" y="61" width="101" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Consecutivo]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+		</element>
 	</columnHeader>
 	<detail>
 		<band height="14" splitType="Stretch">
+			<element kind="textField" uuid="569e64f8-a59b-4a61-b427-5c680cac33f0" x="109" y="0" width="56" height="14" fontName="Tahoma" fontSize="9.0" pattern="dd/MM/yyyy" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{fecha_emision}]]></expression>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="6fb22d9e-c4eb-4f1d-bb47-b5ccdf4c48e4" x="167" y="0" width="59" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{exento}]]></expression>
+			</element>
+			<element kind="textField" uuid="0bce2f68-7986-4bcb-bc51-2909f8706dc5" x="228" y="0" width="73" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{gravado}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="7fd650fe-0ad0-4c02-bd74-373d7dd31605" x="429" y="0" width="70" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{impuesto}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="fc5e932f-4ab1-4339-a8db-1d9fcaaaa466" x="566" y="0" width="70" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{IVA13}]]></expression>
+			</element>
+			<element kind="textField" uuid="c9beb2b1-0b60-4bf6-8e81-b6e7956da991" x="302" y="0" width="73" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{subtotal}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="0566cd5f-dc6c-4280-b265-5990144c31e1" x="377" y="0" width="48" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{descuento}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="87830b90-aae7-48fe-a77e-8d66d62d99d5" x="902" y="0" width="78" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{total_comprobante}]]></expression>
+			</element>
+			<element kind="textField" uuid="3aed70da-1817-4936-9ff2-58ade78c8ff6" x="501" y="0" width="62" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{IVA1}]]></expression>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="3f714b76-e558-4ea6-9d6a-0ee8f31ea2f1" x="640" y="0" width="48" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{IVA_}]]></expression>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="63de330c-bdc6-4af0-a20f-c85ac1f57f57" x="692" y="0" width="48" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{ISC}]]></expression>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			</element>
+			<element kind="textField" uuid="98dec497-180b-42c2-837a-4e71c92b6e0c" x="796" y="0" width="50" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{Otros}]]></expression>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="b06d844b-ff61-4145-855e-100623b80e9a" x="743" y="0" width="48" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{IUC}]]></expression>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			</element>
+			<element kind="textField" uuid="05da3061-7b68-4c6a-a06f-abe936789463" x="850" y="0" width="47" height="14" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{Otros2}]]></expression>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="baa4ac08-19fd-402e-8a3b-29d3fa1d1b5f" x="3" y="0" width="101" height="14" fontName="Tahoma" fontSize="9.0" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA[$F{comprobante}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="109" y="0" width="56" height="14" uuid="569e64f8-a59b-4a61-b427-5c680cac33f0">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="167" y="0" width="59" height="14" uuid="6fb22d9e-c4eb-4f1d-bb47-b5ccdf4c48e4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{exento}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="228" y="0" width="73" height="14" uuid="0bce2f68-7986-4bcb-bc51-2909f8706dc5">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{gravado}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="429" y="0" width="70" height="14" uuid="7fd650fe-0ad0-4c02-bd74-373d7dd31605">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{impuesto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="566" y="0" width="70" height="14" uuid="fc5e932f-4ab1-4339-a8db-1d9fcaaaa466"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{IVA13}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="302" y="0" width="73" height="14" uuid="c9beb2b1-0b60-4bf6-8e81-b6e7956da991">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="377" y="0" width="48" height="14" uuid="0566cd5f-dc6c-4280-b265-5990144c31e1">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="902" y="0" width="78" height="14" uuid="87830b90-aae7-48fe-a77e-8d66d62d99d5"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{total_comprobante}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="501" y="0" width="62" height="14" uuid="3aed70da-1817-4936-9ff2-58ade78c8ff6">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{IVA1}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="640" y="0" width="48" height="14" uuid="3f714b76-e558-4ea6-9d6a-0ee8f31ea2f1">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{IVA_}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="692" y="0" width="48" height="14" uuid="63de330c-bdc6-4af0-a20f-c85ac1f57f57">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{ISC}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="796" y="0" width="50" height="14" uuid="98dec497-180b-42c2-837a-4e71c92b6e0c">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{Otros}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="743" y="0" width="48" height="14" uuid="b06d844b-ff61-4145-855e-100623b80e9a">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{IUC}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="850" y="0" width="47" height="14" uuid="05da3061-7b68-4c6a-a06f-abe936789463">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{Otros2}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="0" width="101" height="14" uuid="baa4ac08-19fd-402e-8a3b-29d3fa1d1b5f">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{comprobante}]]></textFieldExpression>
-			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="18" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="25" splitType="Stretch">
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="880" y="2" width="100" height="20" uuid="fd46045e-68fc-4759-8d89-2339383655ff"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="10"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="3" y="2" width="100" height="18" uuid="4a8a3427-add9-40ec-ae07-260cc3f85275">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="10"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement x="103" y="2" width="100" height="18" uuid="08abd29e-ef6a-4de6-9820-dddb070941ab">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="10"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" de " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-		</band>
+	<columnFooter height="18" splitType="Stretch"/>
+	<pageFooter height="25" splitType="Stretch">
+		<element kind="textField" uuid="fd46045e-68fc-4759-8d89-2339383655ff" x="880" y="2" width="100" height="20" fontName="Tahoma" fontSize="10.0" pattern="dd/MM/yyyy" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+		<element kind="textField" uuid="4a8a3427-add9-40ec-ae07-260cc3f85275" x="3" y="2" width="100" height="18" fontName="Tahoma" fontSize="10.0" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA["Página " + $V{PAGE_NUMBER}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+		</element>
+		<element kind="textField" uuid="08abd29e-ef6a-4de6-9820-dddb070941ab" x="103" y="2" width="100" height="18" fontName="Tahoma" fontSize="10.0" evaluationTime="Report" hTextAlign="Left" vTextAlign="Middle">
+			<expression><![CDATA[" de " + $V{PAGE_NUMBER}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
 	</pageFooter>
-	<summary>
-		<band height="55" splitType="Stretch">
-			<textField pattern="#,##0.00">
-				<reportElement x="228" y="3" width="73" height="17" forecolor="#009900" uuid="bd7a69ff-29dd-4b03-8040-8b415d4d58f9">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalGravado}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="302" y="3" width="73" height="17" forecolor="#009900" uuid="5fc3466a-adbf-4d67-9385-dac1b43f2051">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalSubtotal}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="566" y="3" width="70" height="17" forecolor="#009900" uuid="de0fc200-1af6-412e-aeab-080e5f889036">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalIVA13}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="377" y="3" width="48" height="17" forecolor="#009900" uuid="44b65e1e-6847-4caa-97ca-1492dcbf4536">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalDescuento}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00#">
-				<reportElement x="167" y="3" width="59" height="17" forecolor="#009900" uuid="9456a7fb-d85e-47ae-b8cd-ddbffb6a5558">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalExento}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="429" y="3" width="70" height="17" forecolor="#009900" uuid="2c7888ce-af77-45d5-9d9c-dfa67ba54045">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalImpuesto}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="902" y="3" width="78" height="17" forecolor="#009900" uuid="2cbac47a-f1b1-482b-ba35-f2883f71eca1">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalComprobante}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="501" y="3" width="62" height="17" forecolor="#009900" uuid="eed0715c-80aa-4ca7-ba61-bb842f76bda4">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalIVA1}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="640" y="3" width="48" height="17" forecolor="#009900" uuid="7d9dbfc8-96dd-4872-bb30-90711f5b1e1c">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalIVA_}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="692" y="3" width="48" height="17" forecolor="#009900" uuid="1125c9d4-fbf1-4b7c-8a22-6ce20dd0790d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalISC}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="796" y="3" width="50" height="17" forecolor="#009900" uuid="33751273-7103-4ee4-a36c-4da53b61689d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalOtros1}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="743" y="3" width="48" height="17" forecolor="#009900" uuid="eaeca5a9-1c6a-4b26-be9d-6802a3521108">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalIUC}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="850" y="3" width="47" height="17" forecolor="#009900" uuid="d33590e3-b7d3-4f72-9bb2-2c994d947ec6">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Tahoma" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{TotalOtros2}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="2" y="30" width="876" height="18" uuid="e409a25e-6120-4538-a919-eeef1b4b5e24"/>
-				<text><![CDATA[IVA_?%= IVA con % distintos a 1 y 13, ISC=Impuesto de consumo, IUC=Impuesto a los combustibles, Otros1=Otros impuestos, Otros2=Otros impuestos diferentes a los descritos en esta línea.]]></text>
-			</staticText>
-		</band>
+	<summary height="55" splitType="Stretch">
+		<element kind="textField" uuid="bd7a69ff-29dd-4b03-8040-8b415d4d58f9" x="228" y="3" width="73" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalGravado}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="5fc3466a-adbf-4d67-9385-dac1b43f2051" x="302" y="3" width="73" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalSubtotal}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="de0fc200-1af6-412e-aeab-080e5f889036" x="566" y="3" width="70" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalIVA13}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="44b65e1e-6847-4caa-97ca-1492dcbf4536" x="377" y="3" width="48" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalDescuento}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="9456a7fb-d85e-47ae-b8cd-ddbffb6a5558" x="167" y="3" width="59" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00#" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalExento}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="2c7888ce-af77-45d5-9d9c-dfa67ba54045" x="429" y="3" width="70" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalImpuesto}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+		</element>
+		<element kind="textField" uuid="2cbac47a-f1b1-482b-ba35-f2883f71eca1" x="902" y="3" width="78" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalComprobante}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="eed0715c-80aa-4ca7-ba61-bb842f76bda4" x="501" y="3" width="62" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalIVA1}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="7d9dbfc8-96dd-4872-bb30-90711f5b1e1c" x="640" y="3" width="48" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalIVA_}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="1125c9d4-fbf1-4b7c-8a22-6ce20dd0790d" x="692" y="3" width="48" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalISC}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="33751273-7103-4ee4-a36c-4da53b61689d" x="796" y="3" width="50" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalOtros1}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="textField" uuid="eaeca5a9-1c6a-4b26-be9d-6802a3521108" x="743" y="3" width="48" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalIUC}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="d33590e3-b7d3-4f72-9bb2-2c994d947ec6" x="850" y="3" width="47" height="17" forecolor="#009900" fontName="Tahoma" fontSize="9.0" pattern="#,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$V{TotalOtros2}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="e409a25e-6120-4538-a919-eeef1b4b5e24" x="2" y="30" width="876" height="18">
+			<text><![CDATA[IVA_?%= IVA con % distintos a 1 y 13, ISC=Impuesto de consumo, IUC=Impuesto a los combustibles, Otros1=Otros impuestos, Otros2=Otros impuestos diferentes a los descritos en esta línea.]]></text>
+		</element>
 	</summary>
 </jasperReport>
