@@ -1,0 +1,296 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="bingo_cards_4_per_page" language="java" columnCount="2" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="276" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" uuid="7489c3e1-0e39-4183-903b-5eae139a5a8b">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="BINGO"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="GAME_ID" class="java.lang.Long"/>
+	<query language="SQL"><![CDATA[SELECT
+    c.id AS cardId,
+    LPAD(c.id, 3, '0') AS cardCode,
+
+    c.b1, c.b2, c.b3, c.b4, c.b5,
+    c.i1, c.i2, c.i3, c.i4, c.i5,
+    c.n1, c.n2, c.n3, c.n4, c.n5,
+    c.g1, c.g2, c.g3, c.g4, c.g5,
+    c.o1, c.o2, c.o3, c.o4, c.o5
+
+FROM bingo_card c
+WHERE c.game_id = $P{GAME_ID}
+ORDER BY c.id
+]]></query>
+	<field name="cardId" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="cardId"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="cardCode" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cardCode"/>
+		<property name="com.jaspersoft.studio.field.label" value="cardCode"/>
+	</field>
+	<field name="b1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="b1"/>
+		<property name="com.jaspersoft.studio.field.label" value="b1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="b2" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="b2"/>
+		<property name="com.jaspersoft.studio.field.label" value="b2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="b3" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="b3"/>
+		<property name="com.jaspersoft.studio.field.label" value="b3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="b4" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="b4"/>
+		<property name="com.jaspersoft.studio.field.label" value="b4"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="b5" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="b5"/>
+		<property name="com.jaspersoft.studio.field.label" value="b5"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="i1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="i1"/>
+		<property name="com.jaspersoft.studio.field.label" value="i1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="i2" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="i2"/>
+		<property name="com.jaspersoft.studio.field.label" value="i2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="i3" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="i3"/>
+		<property name="com.jaspersoft.studio.field.label" value="i3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="i4" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="i4"/>
+		<property name="com.jaspersoft.studio.field.label" value="i4"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="i5" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="i5"/>
+		<property name="com.jaspersoft.studio.field.label" value="i5"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="n1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="n1"/>
+		<property name="com.jaspersoft.studio.field.label" value="n1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="n2" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="n2"/>
+		<property name="com.jaspersoft.studio.field.label" value="n2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="n3" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="n3"/>
+		<property name="com.jaspersoft.studio.field.label" value="n3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="n4" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="n4"/>
+		<property name="com.jaspersoft.studio.field.label" value="n4"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="n5" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="n5"/>
+		<property name="com.jaspersoft.studio.field.label" value="n5"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="g1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="g1"/>
+		<property name="com.jaspersoft.studio.field.label" value="g1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="g2" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="g2"/>
+		<property name="com.jaspersoft.studio.field.label" value="g2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="g3" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="g3"/>
+		<property name="com.jaspersoft.studio.field.label" value="g3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="g4" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="g4"/>
+		<property name="com.jaspersoft.studio.field.label" value="g4"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="g5" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="g5"/>
+		<property name="com.jaspersoft.studio.field.label" value="g5"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="o1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="o1"/>
+		<property name="com.jaspersoft.studio.field.label" value="o1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="o2" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="o2"/>
+		<property name="com.jaspersoft.studio.field.label" value="o2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="o3" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="o3"/>
+		<property name="com.jaspersoft.studio.field.label" value="o3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="o4" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="o4"/>
+		<property name="com.jaspersoft.studio.field.label" value="o4"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<field name="o5" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="o5"/>
+		<property name="com.jaspersoft.studio.field.label" value="o5"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="bingo_card"/>
+	</field>
+	<detail>
+		<band height="360" splitType="Stretch">
+			<element kind="frame" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0002" mode="Opaque" x="8" y="8" width="260" height="340" forecolor="#000000" backcolor="#FFFFFF">
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0003" x="0" y="0" width="260" height="340" forecolor="#004C99" backcolor="#FFFFFF">
+					<pen lineWidth="2.0" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0004" mode="Opaque" x="10" y="10" width="240" height="40" forecolor="#0066CC" backcolor="#0066CC"/>
+				<element kind="staticText" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0101" x="10" y="10" width="48" height="40" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="22.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<text><![CDATA[B]]></text>
+				</element>
+				<element kind="staticText" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0102" x="58" y="10" width="48" height="40" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="22.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<text><![CDATA[I]]></text>
+				</element>
+				<element kind="staticText" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0103" x="106" y="10" width="48" height="40" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="22.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<text><![CDATA[N]]></text>
+				</element>
+				<element kind="staticText" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0104" x="154" y="10" width="48" height="40" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="22.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<text><![CDATA[G]]></text>
+				</element>
+				<element kind="staticText" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0105" x="202" y="10" width="48" height="40" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="22.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<text><![CDATA[O]]></text>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0200" x="10" y="50" width="240" height="240" forecolor="#000000" backcolor="#FFFFFF">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0201" x="58" y="50" width="1" height="240" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0202" x="106" y="50" width="1" height="240" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0203" x="154" y="50" width="1" height="240" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0204" x="202" y="50" width="1" height="240" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0205" x="10" y="98" width="240" height="1" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0206" x="10" y="146" width="240" height="1" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0207" x="10" y="194" width="240" height="1" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0208" x="10" y="242" width="240" height="1" forecolor="#000000">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0301" x="10" y="50" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{b1}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0302" x="58" y="50" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{i1}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0303" x="106" y="50" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{n1}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0304" x="154" y="50" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{g1}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0305" x="202" y="50" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{o1}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0311" x="10" y="98" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{b2}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0312" x="58" y="98" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{i2}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0313" x="106" y="98" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{n2}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0314" x="154" y="98" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{g2}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0315" x="202" y="98" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{o2}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0321" x="10" y="146" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{b3}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0322" x="58" y="146" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{i3}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0323" mode="Opaque" x="106" y="146" width="48" height="48" backcolor="#FFCCFF" fontName="DejaVu Sans" fontSize="14.0" textAdjust="StretchHeight" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{cardCode} == null ? "✪" : $F{cardCode} + "\n✪" ]]></expression>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0324" x="154" y="146" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{g3}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0325" x="202" y="146" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{o3}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0331" x="10" y="194" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{b4}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0332" x="58" y="194" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{i4}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0333" x="106" y="194" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{n4}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0334" x="154" y="194" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{g4}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0335" x="202" y="194" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{o4}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0341" x="10" y="242" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{b5}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0342" x="58" y="242" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{i5}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0343" x="106" y="242" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{n5}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0344" x="154" y="242" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{g5}]]></expression>
+				</element>
+				<element kind="textField" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0345" x="202" y="242" width="48" height="48" fontName="Times New Roman" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{o5}]]></expression>
+				</element>
+			</element>
+		</band>
+	</detail>
+</jasperReport>
