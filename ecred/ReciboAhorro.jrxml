@@ -20,8 +20,8 @@
 	p.descrip,
 	a.fecha,
 	FUN_ahorro_saldo_anterior(a.id) AS saldo_anterior,
-	Round(a.monto,2) AS monto,
-	FUN_ahorro_saldo_anterior(a.id) + Round(a.monto,2) AS saldo,
+	if(a.tipo_mov=0,Round(a.monto,2),Round(a.monto,2)*-1)  AS monto,
+	FUN_ahorro_saldo_anterior(a.id) + if(a.tipo_mov=0,Round(a.monto,2),Round(a.monto,2)*-1) AS saldo,
 	p.tasa,
 	if(a.tipo_mov = 0, 'Crédito', 'Débito') AS tipo,
 	if(a.tipo_monto = 0, 'Regular', 'Interés') AS tipo_monto
@@ -141,8 +141,8 @@ WHERE a.id = $P{p_id};]]></query>
 		<element kind="staticText" uuid="77bd6ccf-bc97-492d-a76c-2c817d3163a8" x="333" y="48" width="70" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
 			<text><![CDATA[Saldo Ant]]></text>
 		</element>
-		<element kind="staticText" uuid="b22c83b9-b2f2-4921-b31f-ab27ce1bed69" x="406" y="48" width="70" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
-			<text><![CDATA[Abono]]></text>
+		<element kind="textField" uuid="18955286-cee7-470a-ab98-8b8eb0c87039" x="406" y="48" width="70" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
+			<expression><![CDATA[$F{tipo}]]></expression>
 		</element>
 		<element kind="staticText" uuid="986ee8f1-4874-4754-b0a7-33dd357211ca" x="482" y="48" width="70" height="16" forecolor="#009900" fontName="Tahoma" fontSize="12.0" bold="true" hTextAlign="Right">
 			<text><![CDATA[Saldo Act]]></text>
