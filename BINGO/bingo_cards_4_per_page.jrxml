@@ -1,7 +1,16 @@
 <!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
-<jasperReport name="bingo_cards_4_per_page" language="java" columnCount="2" printOrder="Horizontal" pageWidth="612" pageHeight="792" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="286" leftMargin="20" rightMargin="20" topMargin="15" bottomMargin="15" uuid="7489c3e1-0e39-4183-903b-5eae139a5a8b">
+<jasperReport name="bingo_cards_4_per_page" language="java" columnCount="2" printOrder="Horizontal" pageWidth="612" pageHeight="792" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="283" columnSpacing="15" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="7489c3e1-0e39-4183-903b-5eae139a5a8b">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="BINGO"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<parameter name="GAME_ID" forPrompting="false" class="java.lang.Long"/>
 	<parameter name="TABLE_NAME" forPrompting="false" class="java.lang.String">
 		<defaultValueExpression><![CDATA["bingo_card_manual_pool"]]></defaultValueExpression>
@@ -163,13 +172,13 @@ ORDER BY c.id
 				<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0003" mode="Opaque" x="-10" y="-8" width="292" height="368" forecolor="rgba(0, 0, 0, 0.0)" backcolor="#1B17E8">
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0003" mode="Opaque" x="-10" y="-8" width="292" height="368" forecolor="#000000" backcolor="#1B17E8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<pen lineWidth="2.0" lineStyle="Solid"/>
 				</element>
-				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0004" stretchType="NoStretch" mode="Opaque" x="0" y="-8" width="275" height="70" forecolor="rgba(0, 102, 204, 0.0)" backcolor="#1B17E8">
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0004" stretchType="NoStretch" mode="Opaque" x="0" y="0" width="275" height="62" forecolor="rgba(0, 102, 204, 0.0)" backcolor="#1B17E8">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</element>
 				<element kind="staticText" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0101" x="1" y="6" width="58" height="55" forecolor="#FFFFFF" fontName="Bingo Dilan" fontSize="26.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
@@ -195,8 +204,9 @@ ORDER BY c.id
 					<text><![CDATA[O]]></text>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0200" x="0" y="61" width="274" height="291" forecolor="#000000" backcolor="#FFFFFF">
+				<element kind="rectangle" uuid="aaaaaaa1-bbbb-cccc-dddd-eeeeeeee0200" x="0" y="61" width="275" height="291" forecolor="#000000" backcolor="#FFFFFF">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</element>
